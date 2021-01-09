@@ -1,0 +1,93 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateRoleInput {
+  """角色编码"""
+  roleCode: String!
+
+  """角色名称"""
+  roleName: String!
+}
+
+input CreateUserInput {
+  """昵称"""
+  nickname: String
+
+  """密码"""
+  password: String
+
+  """角色ID列表"""
+  roles: [String!]
+
+  """用户名"""
+  username: String!
+}
+
+type Mutation {
+  createRole(createRoleInput: CreateRoleInput!): Role!
+  createUser(createUserInput: CreateUserInput!): User!
+  removeRole(id: ID!): Role!
+  removeUser(id: ID!): User!
+  updateRole(id: ID!, updateRoleInput: UpdateRoleInput!): Role!
+  updateUser(id: ID!, updateUserInput: UpdateUserInput!): User!
+}
+
+type Query {
+  role(id: ID!): Role!
+  roles: [Role!]!
+  user(id: ID!): User!
+  userPagination(
+    """是否查询数量"""
+    isSearchCount: Boolean = false
+
+    """数据长度限制"""
+    limit: Int
+
+    """分页偏移量"""
+    offset: Int = 0
+  ): UserPaginated!
+  users: [User!]!
+}
+
+type Role {
+  """唯一标识"""
+  _id: ID!
+
+  """角色编码"""
+  roleCode: String!
+
+  """角色名称"""
+  roleName: String!
+
+  """用户列表"""
+  users: [User!]
+}
+
+input UpdateRoleInput {
+  """角色名称"""
+  roleName: String!
+}
+
+input UpdateUserInput {
+  """昵称"""
+  nickname: String
+
+  """角色ID列表"""
+  roles: [String!]
+}
+
+type User {
+  """唯一标识"""
+  _id: ID!
+  nickname: String
+  roles: [Role!]
+
+  """用户名"""
+  username: String!
+}
+
+type UserPaginated {
+  records: [User!]!
+  total: Int!
+}
