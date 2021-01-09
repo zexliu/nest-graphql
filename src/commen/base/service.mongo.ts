@@ -6,13 +6,15 @@ import { Id } from 'src/types';
 import { LOGGER } from '../logger/logger.constants';
 import { PaginationArgs } from '../pagination/pagination-type';
 
+type Pagination = {};
+
 export interface IMongoService<T, CREATE, UPDATE> {
   create(input: CREATE): Promise<T>;
   findAll(): Promise<T[]>;
   findById(id: Id): Promise<T>;
   updateById(id: Id, input: UPDATE): Promise<T>;
   deleteById(id: Id): Promise<T>;
-  findPagination(args: PaginationArgs);
+  findPagination(args: PaginationArgs): Promise<any>;
 }
 
 export function MongoServiceType<T, CREATE, UPDATE>(TClass: ClassType<T>) {
