@@ -6,24 +6,26 @@ import { Id } from 'src/types';
 import { LOGGER } from '../logger/logger.constants';
 import { PaginationArgs } from '../pagination/pagination-type';
 
-type Pagination = {};
-
+type PaginatedResult = {
+  total?: number | undefined;
+  records: Array<any>;
+};
 export interface IMongoService<T, CREATE, UPDATE> {
   create(input: CREATE): Promise<T>;
   findAll(): Promise<T[]>;
   findById(id: Id): Promise<T>;
   updateById(id: Id, input: UPDATE): Promise<T>;
   deleteById(id: Id): Promise<T>;
-  findPagination(args: PaginationArgs): Promise<any>;
+  findPagination(args: PaginationArgs): Promise<PaginatedResult>;
 }
 
 export function MongoServiceType<T, CREATE, UPDATE>(TClass: ClassType<T>) {
   type D = T & Document;
   const { name } = TClass;
-  abstract class MongoService {
+  abstract class MongoService implements IMongoService<T, CREATE, UPDATE> {
     constructor(
-      @Inject(LOGGER) private readonly logger: Logger,
-      @InjectModel(name) private model: Model<D>,
+      @Inject(LOGGER) protected readonly logger: Logger,
+      @InjectModel(name) protected model: Model<D>,
     ) {
       this.logger.setContext(`${name}Service`);
     }
@@ -46,15 +48,15 @@ export function MongoServiceType<T, CREATE, UPDATE>(TClass: ClassType<T>) {
       return this.model.findByIdAndDelete(id).exec();
     }
 
-    async findPagination(args: PaginationArgs) {
+    async findPagination(args: PaginationArgs): Promise<PaginatedResult> {
       const { isSearchCount, limit, offset } = args;
-      let count = undefined;
+      let count: undefined | number = undefined;
       if (isSearchCount) {
         count = await this.model.count();
       }
-      let models;
+      let models: Array<T>;
       if (!isSearchCount || count >= offset) {
-        models = await this.model.find().skip(offset).limit(limit);
+        models = await this.model.find().skip(offset).limit(limit).exec();
       } else {
         models = [];
       }

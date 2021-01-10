@@ -29,6 +29,6 @@ export class User {
 }
 
 @ObjectType()
-export class UserPaginated extends PaginatedType(User) {}
+export class UserPaginated extends PaginatedType(User) { }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -26,7 +26,7 @@ export class UsersResolver {
     private readonly usersService: UsersService,
     private readonly roleService: RolesService,
     @Inject(LOGGER) private readonly logger: Logger,
-  ) {}
+  ) { }
   @Mutation(() => User)
   createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
     return this.usersService.create(createUserInput);
@@ -42,7 +42,7 @@ export class UsersResolver {
 
   @Query(() => User, { name: 'user' })
   findOne(@Args('id', { type: () => ID }) id: Id) {
-    return this.usersService.findOne(id);
+    return this.usersService.findById(id);
   }
 
   @Mutation(() => User)
@@ -50,12 +50,12 @@ export class UsersResolver {
     @Args('id', { type: () => ID }) id: Id,
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
   ) {
-    return this.usersService.update(id, updateUserInput);
+    return this.usersService.updateById(id, updateUserInput);
   }
 
   @Mutation(() => User)
   removeUser(@Args('id', { type: () => ID }) id: Id) {
-    return this.usersService.remove(id);
+    return this.usersService.deleteById(id);
   }
 
   // @ResolveField(() => String)
