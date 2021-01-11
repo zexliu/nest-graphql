@@ -1,17 +1,16 @@
-import { Id } from './../../types/index.d';
 import { Injectable } from '@nestjs/common';
-import { CreateUserInput } from './dto/create-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
-import { User } from './entities/user.entity';
-import { MongoServiceType } from 'src/commen/base/service.mongo';
+import { User, UserDocument } from './entities/user.entity';
+import { BaseService } from 'src/commen/base/base.service';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Id } from 'src/types';
 
 @Injectable()
-export class UsersService extends MongoServiceType<
-  User,
-  CreateUserInput,
-  UpdateUserInput
->(User) {
+export class UserService extends BaseService<UserDocument> {
+  constructor(@InjectModel(User.name) model: Model<UserDocument>) {
+    super(model);
+  }
   findByRoleId(id: Id) {
-    this.model.find({ roles: { $in: [id] } });
+    return this.model.find({ roles: { $in: [id] } });
   }
 }

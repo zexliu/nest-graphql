@@ -7,34 +7,34 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
-import { RolesService } from './roles.service';
+import { RoleService } from './roles.service';
 import { Role } from './entities/role.entity';
 import { CreateRoleInput } from './dto/create-role.input';
 import { UpdateRoleInput } from './dto/update-role.input';
 import { Id } from 'src/types';
-import { UsersService } from '../users/users.service';
+import { UserService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 
 @Resolver(() => Role)
-export class RolesResolver {
+export class RoleResolver {
   constructor(
-    private readonly rolesService: RolesService,
-    private readonly userService: UsersService,
+    private readonly roleService: RoleService,
+    private readonly userService: UserService,
   ) {}
 
   @Mutation(() => Role)
   createRole(@Args('createRoleInput') createRoleInput: CreateRoleInput) {
-    return this.rolesService.create(createRoleInput);
+    return this.roleService.save(createRoleInput);
   }
 
   @Query(() => [Role], { name: 'roles' })
   findAll() {
-    return this.rolesService.findAll();
+    return this.roleService.findList();
   }
 
   @Query(() => Role, { name: 'role' })
   findOne(@Args('id', { type: () => ID }) id: Id) {
-    return this.rolesService.findOne(id);
+    return this.roleService.findById(id);
   }
 
   @Mutation(() => Role)
@@ -42,12 +42,12 @@ export class RolesResolver {
     @Args('id', { type: () => ID }) id: Id,
     @Args('updateRoleInput') updateRoleInput: UpdateRoleInput,
   ) {
-    return this.rolesService.update(id, updateRoleInput);
+    return this.roleService.updateById(id, updateRoleInput);
   }
 
   @Mutation(() => Role)
   removeRole(@Args('id', { type: () => ID }) id: Id) {
-    return this.rolesService.remove(id);
+    return this.roleService.deleteById(id);
   }
 
   @ResolveField(() => [User])

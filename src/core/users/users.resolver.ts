@@ -1,48 +1,46 @@
 import {
   Resolver,
-  Query,
   Mutation,
   Args,
-  ResolveField,
+  Query,
   ID,
   Parent,
+  ResolveField,
 } from '@nestjs/graphql';
-import { UsersService } from './users.service';
+import { UserService } from './users.service';
 import { User, UserPaginated } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { Id } from 'src/types';
-import { RolesService } from '../roles/roles.service';
-import { Role } from '../roles/entities/role.entity';
 
 import { Inject } from '@nestjs/common';
-import { LOGGER } from 'src/commen/logger/logger.constants';
-import { Logger } from 'src/commen/logger/logger.classes';
 import { PaginationArgs } from 'src/commen/pagination/pagination-type';
+import { RoleService } from '../roles/roles.service';
+import { Role } from '../roles/entities/role.entity';
 
 @Resolver(() => User)
-export class UsersResolver {
+export class UserResolver {
   constructor(
-    private readonly usersService: UsersService,
-    private readonly roleService: RolesService,
-    @Inject(LOGGER) private readonly logger: Logger,
-  ) { }
+    @Inject(UserService.name) private readonly userService: UserService,
+    @Inject(RoleService.name) private readonly roleService: RoleService,
+  ) {}
+
   @Mutation(() => User)
   createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    return this.usersService.create(createUserInput);
+    return this.userService.save(createUserInput);
   }
   @Query(() => UserPaginated)
   userPagination(@Args() args: PaginationArgs) {
-    return this.usersService.findPagination(args);
+    return this.userService.findPage(args);
   }
   @Query(() => [User], { name: 'users' })
   findAll() {
-    return this.usersService.findAll();
+    return this.userService.findList();
   }
 
   @Query(() => User, { name: 'user' })
   findOne(@Args('id', { type: () => ID }) id: Id) {
-    return this.usersService.findById(id);
+    return this.userService.findById(id);
   }
 
   @Mutation(() => User)
@@ -50,21 +48,17 @@ export class UsersResolver {
     @Args('id', { type: () => ID }) id: Id,
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
   ) {
-    return this.usersService.updateById(id, updateUserInput);
+    return this.userService.updateById(id, updateUserInput);
   }
 
   @Mutation(() => User)
   removeUser(@Args('id', { type: () => ID }) id: Id) {
-    return this.usersService.deleteById(id);
+    return this.userService.deleteById(id);
   }
-
-  // @ResolveField(() => String)
-  // password() {
-  //   return '******';
-  // }
 
   @ResolveField(() => [Role])
   roles(@Parent() user: User) {
-    return this.roleService.findRolesByIds(user.roles as Id[]);
+    console.log(user);
+    return this.roleService.findRolesByIds(user.roles as [Id]);
   }
 }

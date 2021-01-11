@@ -1,16 +1,15 @@
 import { ObjectType, Field, ID, HideField } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { Id, Ref } from 'src/types';
+import { Ref } from 'src/types';
 import { Role } from 'src/core/roles/entities/role.entity';
 import { PaginatedType } from 'src/commen/pagination/pagination-type';
+import { BaseModel } from 'src/commen/base/base.model';
 
+export type UserDocument = User & mongoose.Document;
 @Schema()
 @ObjectType()
-export class User {
-  @Field(() => ID, { description: '唯一标识' })
-  readonly _id: Id;
-
+export class User extends BaseModel {
   @Field(() => String, { description: '用户名' })
   @Prop({ required: true, unique: true })
   username: string;
@@ -29,6 +28,6 @@ export class User {
 }
 
 @ObjectType()
-export class UserPaginated extends PaginatedType(User) { }
+export class UserPaginated extends PaginatedType(User) {}
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -10,18 +10,27 @@ export class PaginationArgs {
   @Min(1, { message: "limit can't be less than 1" })
   @Field(() => Int, { nullable: true, description: '数据长度限制' })
   limit?: number;
-
   @Field(() => Boolean, { description: '是否查询数量', defaultValue: false })
   isSearchCount?: boolean;
+
+  @Field(() => [String], {
+    description: '排序数组 [field1,asc,field2,desc...]',
+  })
+  sort?: [string];
+}
+
+export interface IPaginatedResponse {
+  total?: number;
+  records: Array<any>;
 }
 
 export function PaginatedType<T>(TClass: ClassType<T>) {
   @ObjectType({ isAbstract: true })
-  abstract class PaginatedClass {
-    @Field(() => Int)
+  abstract class PaginatedResponse implements IPaginatedResponse {
+    @Field(() => Int, { nullable: true })
     total?: number;
     @Field(() => [TClass])
     records: [T];
   }
-  return PaginatedClass;
+  return PaginatedResponse;
 }

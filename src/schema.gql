@@ -11,6 +11,8 @@ input CreateRoleInput {
 }
 
 input CreateUserInput {
+  createBy: ID
+
   """昵称"""
   nickname: String
 
@@ -23,6 +25,11 @@ input CreateUserInput {
   """用户名"""
   username: String!
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type Mutation {
   createRole(createRoleInput: CreateRoleInput!): Role!
@@ -46,6 +53,9 @@ type Query {
 
     """分页偏移量"""
     offset: Int = 0
+
+    """排序数组 [field1,asc,field2,desc...]"""
+    sort: [String!]!
   ): UserPaginated!
   users: [User!]!
 }
@@ -78,10 +88,20 @@ input UpdateUserInput {
 }
 
 type User {
-  """唯一标识"""
+  """主键"""
   _id: ID!
+  createAt: DateTime!
+
+  """创建人"""
+  createBy: User
   nickname: String
   roles: [Role!]
+
+  """更新时间"""
+  updateAt: DateTime
+
+  """修改人"""
+  updateBy: User
 
   """用户名"""
   username: String!
@@ -89,5 +109,5 @@ type User {
 
 type UserPaginated {
   records: [User!]!
-  total: Int!
+  total: Int
 }
